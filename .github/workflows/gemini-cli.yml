@@ -162,14 +162,13 @@ jobs:
 
       - name: 'Acknowledge request'
         env:
-          GITHUB_ACTOR: '${{ github.actor }}'
           GITHUB_TOKEN: '${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}'
           ISSUE_NUMBER: '${{ steps.get_context.outputs.issue_number }}'
           REPOSITORY: '${{ github.repository }}'
           REQUEST_TYPE: '${{ steps.get_context.outputs.request_type }}'
         run: |-
           set -euo pipefail
-          MESSAGE="@${GITHUB_ACTOR} I've received your request and I'm working on it now! 🤖"
+          MESSAGE="I've received your request and I'm working on it now! 🤖"
           if [[ -n "${MESSAGE}" ]]; then
             gh issue comment "${ISSUE_NUMBER}" \
               --body "${MESSAGE}" \
@@ -216,7 +215,7 @@ jobs:
 
       - name: 'Run Gemini'
         id: 'run_gemini'
-        uses: './'
+        uses: 'google-github-actions/run-gemini-cli@v0'
         env:
           GITHUB_TOKEN: '${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}'
           REPOSITORY: '${{ github.repository }}'
@@ -235,7 +234,7 @@ jobs:
             {
               "maxSessionTurns": 50,
               "telemetry": {
-                "enabled": true,
+                "enabled": false,
                 "target": "gcp"
               }
             }

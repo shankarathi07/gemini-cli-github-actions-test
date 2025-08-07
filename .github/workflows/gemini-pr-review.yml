@@ -4,9 +4,6 @@ on:
   pull_request:
     types:
       - 'opened'
-  issue_comment:
-    types:
-      - 'created'
   pull_request_review_comment:
     types:
       - 'created'
@@ -39,13 +36,7 @@ jobs:
   review-pr:
     if: |-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' && github.event.action == 'opened' &&
-        (
-          github.event.pull_request.author_association == 'OWNER' ||
-          github.event.pull_request.author_association == 'MEMBER' ||
-          github.event.pull_request.author_association == 'COLLABORATOR'
-        )
-      ) ||
+      (github.event_name == 'pull_request' && github.event.action == 'opened') ||
       (github.event_name == 'issue_comment' && github.event.issue.pull_request &&
         contains(github.event.comment.body, '@gemini-cli /review') &&
         (
@@ -151,7 +142,7 @@ jobs:
           } >> "${GITHUB_OUTPUT}"
 
       - name: 'Run Gemini PR Review'
-        uses: './'
+        uses: 'google-github-actions/run-gemini-cli@v0'
         id: 'gemini_pr_review'
         env:
           GITHUB_TOKEN: '${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}'
@@ -203,7 +194,7 @@ jobs:
                 "run_shell_command(grep)"
               ],
               "telemetry": {
-                "enabled": true,
+                "enabled": false,
                 "target": "gcp"
               }
             }
